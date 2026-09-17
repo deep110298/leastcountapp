@@ -326,7 +326,10 @@ export default function GameBoard({
       )}
 
       {state.phase === 'round-end' && state.lastRoundResult && !revealRoundEnd && (
-        <CallAnnouncement callerLabel={state.lastRoundResult.caller === 'player' ? playerName : computerName} />
+        <CallAnnouncement
+          callerLabel={state.lastRoundResult.caller === 'player' ? playerName : computerName}
+          isPlayer={state.lastRoundResult.caller === 'player'}
+        />
       )}
 
       {state.phase === 'round-end' && state.lastRoundResult && revealRoundEnd && (

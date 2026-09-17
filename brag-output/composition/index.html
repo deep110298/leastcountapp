@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Least Count — Brag</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #ffffff;
+      }
+      #root {
+        --canvas: #ffffff;
+        --ink: #16141a;
+        --ink-muted: #6f6a74;
+        --accent: #0a6f78;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--canvas);
+        overflow: hidden;
+        font-family: "Outfit", sans-serif;
+        color: var(--ink);
+      }
+      .scene-wrap { position: absolute; inset: 0; }
+      .mono {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      /* real captured screenshots, full-bleed, static (no zoom/pan) */
+      .shot-frame { position: absolute; inset: 0; overflow: hidden; }
+      .shot-frame img {
+        position: absolute;
+        width: 100%;
+        height: auto;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      /* ---- scene 1 : hook ---- */
+      #s1Inner { display: flex; align-items: center; justify-content: center; }
+      #hookLine {
+        max-width: 840px;
+        text-align: center;
+        font-size: 78px;
+        font-weight: 700;
+        line-height: 1.22;
+        letter-spacing: -0.01em;
+        padding: 0 60px;
+        opacity: 0;
+      }
+      /* ---- scene 7 : outro ---- */
+      .center-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+      #wordmarkWrap { flex-direction: column; gap: 24px; }
+      #wordmark5 { text-align: center; font-size: 120px; font-weight: 700; line-height: 1; letter-spacing: -0.01em; opacity: 0; }
+      #outroTagline { font-size: 38px; color: var(--ink-muted); text-align: center; max-width: 760px; opacity: 0; }
+      #outroUrl { font-size: 32px; color: var(--accent); font-weight: 600; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="leastcount-brag" data-start="0" data-duration="24.4" data-width="1080" data-height="1920">
+
+      <!-- SCENE 1 — Hook -->
+      <section id="s1" class="clip" data-start="0" data-duration="2.5">
+        <div id="s1Inner">
+          <p id="hookLine">Everyone thinks their hand is lowest.</p>
+        </div>
+      </section>
+
+      <!-- SCENE 2 — Real home screen -->
+      <section id="s2" class="clip" data-start="2.5" data-duration="2.7">
+        <div id="s2Wrap" class="scene-wrap" style="opacity:0;">
+          <div class="shot-frame" data-layout-allow-overflow="true">
+            <img src="assets/screens/v2-01-home.png" alt="Least Count home screen" />
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 3 — Real setup screen with the three rules -->
+      <section id="s3" class="clip" data-start="5.2" data-duration="4.2">
+        <div id="s3Wrap" class="scene-wrap" style="opacity:0;">
+          <div class="shot-frame" data-layout-allow-overflow="true">
+            <img src="assets/screens/v2-02-setup.png" alt="Least Count setup screen with the three rules" style="top:38%;" />
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 4 — Real wild-card reveal -->
+      <section id="s4" class="clip" data-start="9.4" data-duration="2.5">
+        <div id="s4Wrap" class="scene-wrap" style="opacity:0;">
+          <div class="shot-frame" data-layout-allow-overflow="true">
+            <img src="assets/screens/v2-03-wildcard.png" alt="This round's wild card reveal" />
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 5 — Real round in motion: deal, select, play, draw -->
+      <section id="s5" class="clip" data-start="11.9" data-duration="5">
+        <div class="shot-frame" data-layout-allow-overflow="true">
+          <img id="shotDealt" src="assets/screens/v2-04-dealt.png" alt="Hand dealt" style="opacity:1;" />
+        </div>
+        <div class="shot-frame" data-layout-allow-overflow="true">
+          <img id="shotSelected" src="assets/screens/v2-05-selected.png" alt="Card selected" style="opacity:0;" />
+        </div>
+        <div class="shot-frame" data-layout-allow-overflow="true">
+          <img id="shotDraw1" src="assets/screens/v2-07-after-draw-1.png" alt="Card played, drawing a replacement" style="opacity:0;" />
+        </div>
+        <div class="shot-frame" data-layout-allow-overflow="true">
+          <img id="shotDraw2" src="assets/screens/v2-08-after-draw-2.png" alt="Hand value dropping" style="opacity:0;" />
+        </div>
+      </section>
+
+      <!-- SCENE 6 — Real payoff: Least Count ready, then the round-end reveal -->
+      <section id="s6" class="clip" data-start="16.9" data-duration="5">
+        <div class="shot-frame" data-layout-allow-overflow="true">
+          <img id="shotReady" src="assets/screens/v2-09-least-count-ready.png" alt="Least Count button ready to call" style="opacity:1;" />
+        </div>
+        <div class="shot-frame" data-layout-allow-overflow="true">
+          <img id="shotEnd" src="assets/screens/v2-11-round-end.png" alt="Round end reveal" style="opacity:0;" />
+        </div>
+      </section>
+
+      <!-- SCENE 7 — Outro -->
+      <section id="s7" class="clip" data-start="21.9" data-duration="2.5">
+        <div class="center-layer">
+          <div id="wordmarkWrap">
+            <div id="wordmark5"><div>LEAST</div><div>COUNT</div></div>
+            <p id="outroTagline">Still just a card game.</p>
+            <p id="outroUrl" class="mono">leastcountapp.com</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- audio: music bed only -->
+      <audio id="bgm" src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3" data-start="0" data-duration="24.4" data-track-index="10" data-volume="1"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // ===== Music bed: fade in, hold, fade out =====
+      tl.fromTo("#bgm", { volume: 0 }, { volume: 0.28, duration: 0.6 }, 0);
+      tl.to("#bgm", { volume: 0, duration: 0.6 }, 23.8);
+
+      // ===== SCENE 1 (0 - 2.5) — Hook =====
+      tl.to("#hookLine", { opacity: 1, duration: 0.3 }, 0.0);
+      tl.to("#hookLine", { opacity: 0, duration: 0.3 }, 2.2);
+
+      // ===== SCENE 2 (2.5 - 5.2) — Real home screen =====
+      tl.to("#s2Wrap", { opacity: 1, duration: 0.25 }, 2.5);
+      tl.to("#s2Wrap", { opacity: 0, duration: 0.25 }, 4.95);
+
+      // ===== SCENE 3 (5.2 - 9.4) — Real setup screen =====
+      tl.to("#s3Wrap", { opacity: 1, duration: 0.25 }, 5.2);
+      tl.to("#s3Wrap", { opacity: 0, duration: 0.25 }, 9.15);
+
+      // ===== SCENE 4 (9.4 - 11.9) — Real wild-card reveal =====
+      tl.to("#s4Wrap", { opacity: 1, duration: 0.25 }, 9.4);
+      tl.to("#s4Wrap", { opacity: 0, duration: 0.25 }, 11.65);
+
+      // ===== SCENE 5 (11.9 - 16.9) — Real round in motion (simple crossfades) =====
+      tl.to("#shotSelected", { opacity: 1, duration: 0.2 }, 13.2);
+      tl.to("#shotDraw1", { opacity: 1, duration: 0.2 }, 14.5);
+      tl.to("#shotDraw2", { opacity: 1, duration: 0.2 }, 15.8);
+
+      // ===== SCENE 6 (16.9 - 21.9) — Real payoff =====
+      tl.to("#shotReady", { opacity: 0, duration: 0.2 }, 18.7);
+      tl.to("#shotEnd", { opacity: 1, duration: 0.2 }, 18.7);
+
+      // ===== SCENE 7 (21.9 - 24.4) — Outro =====
+      tl.to("#wordmark5", { opacity: 1, duration: 0.3 }, 22.0);
+      tl.to("#outroTagline", { opacity: 1, duration: 0.3 }, 22.6);
+      tl.to("#outroUrl", { opacity: 1, duration: 0.3 }, 23.0);
+
+      window.__timelines["leastcount-brag"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

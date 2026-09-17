@@ -414,7 +414,10 @@ export default function MultiplayerGameBoard({
       {paused && <MPPauseModal onResume={() => setPaused(false)} onLeave={onLeave} />}
 
       {display.phase === 'round-end' && display.lastRoundResult && !revealRoundEnd && (
-        <CallAnnouncement callerLabel={display.names[display.lastRoundResult.caller]} />
+        <CallAnnouncement
+          callerLabel={display.names[display.lastRoundResult.caller]}
+          isPlayer={display.lastRoundResult.caller === myPlayerId}
+        />
       )}
 
       {display.phase === 'round-end' && display.lastRoundResult && revealRoundEnd && (

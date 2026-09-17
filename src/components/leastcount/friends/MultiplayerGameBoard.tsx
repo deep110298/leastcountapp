@@ -188,9 +188,7 @@ export default function MultiplayerGameBoard({
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3.5 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center">
           <span className="mono-label text-[11px] text-ink-soft">{code ? `Room ${code}` : ''}</span>
-          <span className="mono-label inline-flex items-center gap-2 rounded-full bg-wild px-3.5 py-1.5 text-[11px] font-bold text-white shadow-[0_2px_0_var(--wild-shadow)]">
-            WILD · {display.jokerRank}
-          </span>
+          <span className="mono-label text-[11px] text-ink-soft">Round {display.roundNumber}</span>
           <div className="relative justify-self-end">
             <button
               type="button"
@@ -238,7 +236,9 @@ export default function MultiplayerGameBoard({
           >
             Pause
           </button>
-          <span className="mono-label text-[11px] text-ink-soft">Round {display.roundNumber}</span>
+          <span className="mono-label inline-flex items-center gap-2 rounded-full bg-wild px-3.5 py-1.5 text-[11px] font-bold text-white shadow-[0_2px_0_var(--wild-shadow)]">
+            WILD · {display.jokerRank}
+          </span>
           <div className="flex flex-col items-end gap-1.5 justify-self-end">
             <button
               type="button"

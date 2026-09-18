@@ -85,30 +85,52 @@ export default function PlayingCard({
 }
 
 const BACK_BADGE_SIZE: Record<NonNullable<PlayingCardProps['size']>, string> = {
-  sm: 'h-4 w-4 rounded-[5px]',
-  md: 'h-5.5 w-5.5 rounded-[7px]',
-  lg: 'h-6.5 w-6.5 rounded-[8px]',
+  sm: 'h-6 w-6',
+  md: 'h-8.5 w-8.5',
+  lg: 'h-10 w-10',
 };
 
-const BACK_SPADE_SIZE: Record<NonNullable<PlayingCardProps['size']>, string> = {
-  sm: 'text-[9px]',
-  md: 'text-xs',
-  lg: 'text-sm',
+const BACK_LOGO_SIZE: Record<NonNullable<PlayingCardProps['size']>, string> = {
+  sm: 'h-3 w-3',
+  md: 'h-4.5 w-4.5',
+  lg: 'h-5.5 w-5.5',
+};
+
+const BACK_SUIT_SIZE: Record<NonNullable<PlayingCardProps['size']>, string> = {
+  sm: 'text-[5px] gap-0.5',
+  md: 'text-[7px] gap-1',
+  lg: 'text-[8px] gap-1',
+};
+
+// A woven diamond crosshatch over the accent color, echoing a real playing
+// card's back pattern rather than a flat fill.
+const CROSSHATCH_STYLE = {
+  backgroundColor: 'var(--accent)',
+  backgroundImage:
+    'repeating-linear-gradient(45deg, rgba(255,255,255,0.14) 0px, rgba(255,255,255,0.14) 1.5px, transparent 1.5px, transparent 9px), ' +
+    'repeating-linear-gradient(-45deg, rgba(255,255,255,0.14) 0px, rgba(255,255,255,0.14) 1.5px, transparent 1.5px, transparent 9px)',
 };
 
 export function CardBack({ size = 'md' }: { size?: PlayingCardProps['size'] }) {
   return (
     <div
-      className={`flex flex-shrink-0 flex-col items-center justify-center gap-1 rounded-lg border border-card-back-border bg-card-back-a ${CARD_SHADOW[size ?? 'md']} ${SIZE_CLASSES[size ?? 'md']}`}
+      className={`relative flex flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-accent-shadow/40 ${CARD_SHADOW[size ?? 'md']} ${SIZE_CLASSES[size ?? 'md']}`}
+      style={CROSSHATCH_STYLE}
     >
       <div
-        className={`flex items-center justify-center bg-accent shadow-[0_1.5px_0_var(--accent-shadow)] ${BACK_BADGE_SIZE[size ?? 'md']}`}
+        className={`flex flex-col items-center justify-center rounded-full bg-white shadow-[0_1.5px_0_rgba(0,0,0,0.12)] ${BACK_BADGE_SIZE[size ?? 'md']}`}
       >
-        <span className={`font-mono leading-none text-white ${BACK_SPADE_SIZE[size ?? 'md']}`}>♠</span>
+        <svg viewBox="0 0 24 24" fill="none" className={BACK_LOGO_SIZE[size ?? 'md']} aria-hidden="true">
+          <path
+            d="M12 3.2s-6.6 6.8-6.6 10.6a3.6 3.6 0 0 0 6.4 2.2c-0.4 1.9-1.5 3.3-3.1 4.2h6.6c-1.6-0.9-2.7-2.3-3.1-4.2a3.6 3.6 0 0 0 6.4-2.2c0-3.8-6.6-10.6-6.6-10.6z"
+            fill="var(--accent)"
+          />
+        </svg>
+        <span className={`flex items-center leading-none text-wild ${BACK_SUIT_SIZE[size ?? 'md']}`}>
+          <span>♣</span>
+          <span>♥</span>
+        </span>
       </div>
-      {size !== 'sm' && (
-        <span className="mono-label text-[6.5px] leading-none text-card-ink-soft">Least Count</span>
-      )}
     </div>
   );
 }

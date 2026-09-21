@@ -30,5 +30,12 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    // The service worker runs in the webworker global scope (ServiceWorkerGlobalScope,
+    // FetchEvent, etc.), which conflicts with this program's "dom" lib. It's bundled
+    // separately by esbuild via `serwist build` (see serwist.config.mjs), which doesn't
+    // type-check anyway, so excluding it here just avoids a false-positive lib clash.
+    "src/sw.ts"
+  ]
 }

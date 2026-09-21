@@ -18,7 +18,7 @@ export default function GameLauncher() {
   const [showRules, setShowRules] = useState(false);
 
   return (
-    <div className="relative flex min-h-dvh flex-col items-center justify-center gap-10 overflow-hidden bg-canvas px-4 py-10 text-center">
+    <div className="native-instant relative flex min-h-dvh flex-col items-center justify-center gap-10 overflow-hidden bg-canvas px-4 py-10 text-center">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-accent/10 opacity-70 blur-3xl" />
       </div>

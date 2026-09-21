@@ -142,6 +142,28 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+/* Paired with the native-boot detection script in layout.tsx: while
+   data-native-boot is set, hide the marketing markup that's always what
+   gets server-rendered (the server can't know this request is the native
+   app) behind a plain veil, instead of letting it flash on screen before
+   JS confirms native and swaps in GameLauncher. page.tsx clears the
+   attribute the instant that swap lands. */
+#native-boot-veil {
+  display: none;
+}
+
+html[data-native-boot='1'] #native-boot-veil {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--canvas);
+}
+
+html[data-native-boot='1'] body > :not(#native-boot-veil) {
+  visibility: hidden;
+}
+
 .mono-label {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-weight: 600;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useLayoutEffect, useSyncExternalStore } from 'react';
 import { Capacitor } from '@capacitor/core';
 import GameLauncher from '@/components/leastcount/GameLauncher';
 import MarketingHome from '@/components/marketing/MarketingHome';
@@ -20,5 +20,16 @@ const getServerSnapshot = () => false;
 
 export default function Home() {
   const isNative = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  // Drops the pre-paint veil (see layout.tsx) the instant GameLauncher is
+  // the one actually committed to the DOM — a layout effect runs
+  // synchronously before the browser's next paint, so this never shows a
+  // frame of the marketing page it was hiding.
+  useLayoutEffect(() => {
+    if (isNative) {
+      document.documentElement.removeAttribute('data-native-boot');
+    }
+  }, [isNative]);
+
   return isNative ? <GameLauncher /> : <MarketingHome />;
 }

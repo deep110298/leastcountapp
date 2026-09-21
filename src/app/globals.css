@@ -228,6 +228,15 @@ body {
   animation: call-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* The native app shows this screen on every cold launch, not just a first
+   visit, so the entrance animation (built for a one-time page load) reads
+   as a stuck/dim loading glitch instead of polish. Skip straight to the
+   settled state there; the continuous hero-card-inner float still plays. */
+.native-instant .hero-card,
+.native-instant .fade-up {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-card,
   .hero-card-inner,

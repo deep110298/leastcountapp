@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, IBM_Plex_Mono } from "next/font/google";
+import { SerwistProvider } from "@serwist/next/react";
+import OfflineBanner from "@/components/OfflineBanner";
 import ThemeToggle from "@/components/ThemeToggle";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
@@ -76,9 +78,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col bg-canvas text-ink font-sans">
-        <div id="native-boot-veil" />
-        <ThemeToggle />
-        {children}
+        {/* reloadOnOnline is off on purpose: the default reloads the page the
+            moment connectivity returns, which would wipe an in-progress
+            vs-Computer or Story Mode hand (in-memory React state, not
+            persisted mid-round) the instant WiFi flickers back on. */}
+        <SerwistProvider swUrl="/sw.js" reloadOnOnline={false}>
+          <div id="native-boot-veil" />
+          <ThemeToggle />
+          {children}
+          <OfflineBanner />
+        </SerwistProvider>
       </body>
     </html>
   );

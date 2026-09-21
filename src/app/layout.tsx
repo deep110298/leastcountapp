@@ -60,8 +60,23 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             __html: `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`,
           }}
         />
+        {/* The published iOS app loads this exact page as its whole UI, but
+            the HTML shipped over the wire is always the marketing markup
+            (the server can't know it's native ahead of time). Without this,
+            that marketing HTML paints for a frame before client JS hydrates,
+            detects the native shell, and swaps in GameLauncher. This mirrors
+            Capacitor's own isNativePlatform() bridge check (see page.tsx)
+            but runs synchronously before first paint, same trick as the
+            theme script above — flag it now so CSS can hide the wrong
+            content until the real component swap lands. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if((window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.bridge)||window.androidBridge){document.documentElement.setAttribute("data-native-boot","1")}}catch(e){}})()`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-canvas text-ink font-sans">
+        <div id="native-boot-veil" />
         <ThemeToggle />
         {children}
       </body>

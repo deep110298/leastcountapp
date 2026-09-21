@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Least Count</title>
+<style>
+  :root {
+    color-scheme: dark;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+    padding-top: calc(24px + env(safe-area-inset-top));
+    background: #16141a;
+    color: #f3f1ee;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    text-align: center;
+  }
+  .badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: #0a6f78;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .badge svg {
+    width: 34px;
+    height: 34px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  p {
+    margin: 0;
+    max-width: 320px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba(243, 241, 238, 0.72);
+  }
+  button {
+    appearance: none;
+    border: none;
+    margin-top: 6px;
+    padding: 14px 28px;
+    border-radius: 16px;
+    background: #0a6f78;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 4px 0 #075158;
+  }
+  button:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #075158;
+  }
+  .status {
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(243, 241, 238, 0.4);
+  }
+</style>
+</head>
+<body>
+  <div class="badge" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 3.2s-6.6 6.8-6.6 10.6a3.6 3.6 0 0 0 6.4 2.2c-0.4 1.9-1.5 3.3-3.1 4.2h6.6c-1.6-0.9-2.7-2.3-3.1-4.2a3.6 3.6 0 0 0 6.4-2.2c0-3.8-6.6-10.6-6.6-10.6z" fill="#fff" />
+    </svg>
+  </div>
+  <h1>Can&rsquo;t reach Least Count</h1>
+  <p id="message">Checking your connection&hellip;</p>
+  <button type="button" id="retry">Try again</button>
+  <div class="status" id="status"></div>
+
+  <script>
+    // This page ships inside the app binary (Capacitor's server.errorPath,
+    // see capacitor.config.ts) and is shown natively whenever the WebView's
+    // navigation to leastcountapp.com fails — including a plain "no network"
+    // failure, since without this the WebView is left showing nothing at all.
+    // It must work with zero network access: no fonts, no external scripts,
+    // no assumptions about anything beyond what's in this single file.
+    var TARGET_URL = 'https://leastcountapp.com/';
+    var MAX_AUTO_RETRIES = 1;
+    var messageEl = document.getElementById('message');
+    var statusEl = document.getElementById('status');
+    var retryBtn = document.getElementById('retry');
+
+    // This bundled page's origin doesn't share storage with the app's real
+    // origin, so a query param (not localStorage) is what survives a reload
+    // here — used only to cap automatic retries, never to loop forever.
+    var autoRetriesSoFar = Number(new URLSearchParams(location.search).get('r')) || 0;
+
+    function setMessage(text) {
+      messageEl.textContent = text;
+    }
+
+    function reload(isAuto) {
+      var next = isAuto ? autoRetriesSoFar + 1 : autoRetriesSoFar;
+      statusEl.textContent = next > 0 ? 'Retrying (' + next + ')' : 'Retrying';
+      // A fresh navigation to the real app origin gives its service worker
+      // (once it has installed at least once online) another chance to
+      // serve the cached game entirely from disk — this can succeed even
+      // while navigator.onLine reads false, since a cache hit needs no
+      // network at all. It also picks up a real connection immediately
+      // once one exists.
+      window.location.replace(TARGET_URL);
+    }
+
+    retryBtn.addEventListener('click', function () {
+      reload(false);
+    });
+
+    // Always worth one automatic retry regardless of reported connectivity:
+    // if the very first load failed because the service worker hadn't
+    // finished taking control yet (a timing race, not a real network gap),
+    // this retry alone can resolve it with no action from the player.
+    if (autoRetriesSoFar < MAX_AUTO_RETRIES) {
+      setMessage('Reconnecting to Least Count…');
+      setTimeout(function () {
+        history.replaceState(null, '', '?r=' + (autoRetriesSoFar + 1));
+        reload(true);
+      }, 600);
+    } else {
+      setMessage(
+        navigator.onLine
+          ? 'Still can’t reach Least Count. Check your connection and try again.'
+          : 'You’re offline. If you’ve played before, tap Try again — otherwise, check your connection.'
+      );
+    }
+
+    window.addEventListener('online', function () {
+      reload(false);
+    });
+  </script>
+</body>
+</html>

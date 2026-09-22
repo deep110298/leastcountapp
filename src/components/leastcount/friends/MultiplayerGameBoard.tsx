@@ -188,7 +188,9 @@ export default function MultiplayerGameBoard({
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3.5 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center">
           <span className="mono-label text-[11px] text-ink-soft">{code ? `Room ${code}` : ''}</span>
-          <span className="mono-label text-[11px] text-ink-soft">Round {display.roundNumber}</span>
+          <span className="mono-label text-[11px] text-ink-soft">
+            Round {display.roundNumber} · Limit {display.target}
+          </span>
           <div className="relative justify-self-end">
             <button
               type="button"
@@ -322,7 +324,12 @@ export default function MultiplayerGameBoard({
           )}
         </section>
 
-        {!iAmEliminated && (
+        {iAmEliminated ? (
+          <div className="flex flex-col items-center gap-1 pb-4 pt-2 text-center">
+            <span className="mono-label text-[11px] text-ink-soft">You&apos;re out this game</span>
+            <span className="text-sm text-ink-muted">Watching the rest of the round play out below</span>
+          </div>
+        ) : (
           <>
             <section className="flex flex-col items-center gap-2.5">
               <span className="mono-label flex items-center gap-2 text-[11px] text-ink-soft">

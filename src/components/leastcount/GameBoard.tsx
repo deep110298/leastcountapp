@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, Reorder } from 'framer-motion';
 import { computerTakeTurn, type Difficulty } from '@/lib/leastCount/ai';
 import { randomComputerName } from '@/lib/leastCount/computerNames';
 import { handValue, sortHand } from '@/lib/leastCount/deck';
@@ -34,6 +34,10 @@ import WildCardRevealModal from './WildCardRevealModal';
 
 const DEAL_SPRING = { type: 'spring' as const, stiffness: 320, damping: 26 };
 const CALL_REVEAL_DELAY = 2200;
+// A stable reference (not a fresh `[]` on every render) for use before the
+// game starts — a new array literal there would make prevHand !== myHand
+// true on every render and loop forever.
+const EMPTY_HAND: GameState['hands']['player'] = [];
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 
 interface DailyModeProps {
@@ -107,6 +111,40 @@ export default function GameBoard({
     return () => clearTimeout(timer);
   }, [roundEndKey]);
 
+  // The player's own preferred card order — starts sorted, then only ever
+  // changes via their own drag, or to fold in cards a draw/new round added.
+  // Adjusted during render (rather than in an effect) when the hand's own
+  // identity changes: existing order is preserved, new cards are appended
+  // in sorted order. Derived against an empty hand before the game starts
+  // so these hooks still run on every render, state or no state.
+  const myHand = state?.hands.player ?? EMPTY_HAND;
+  const [handOrder, setHandOrder] = useState<string[]>(() => sortHand(myHand).map((c) => c.id));
+  const [prevHand, setPrevHand] = useState(myHand);
+  if (prevHand !== myHand) {
+    setPrevHand(myHand);
+    const currentIds = new Set(myHand.map((c) => c.id));
+    const kept = handOrder.filter((id) => currentIds.has(id));
+    const additions = sortHand(myHand)
+      .map((c) => c.id)
+      .filter((id) => !kept.includes(id));
+    setHandOrder([...kept, ...additions]);
+  }
+
+  // A one-time nudge that the hand can be dragged into any order — shown at
+  // the start of every fresh game (round 1), not on every round.
+  const isFirstRound = state?.roundNumber === 1;
+  const [showHandHint, setShowHandHint] = useState(isFirstRound);
+  const [prevIsFirstRound, setPrevIsFirstRound] = useState(isFirstRound);
+  if (isFirstRound !== prevIsFirstRound) {
+    setPrevIsFirstRound(isFirstRound);
+    setShowHandHint(isFirstRound);
+  }
+  useEffect(() => {
+    if (!showHandHint) return;
+    const timer = setTimeout(() => setShowHandHint(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showHandHint]);
+
   if (!state) {
     return (
       <SetupScreen
@@ -126,15 +164,15 @@ export default function GameBoard({
   const yourTurnToDraw = canDrawReplacement(state, 'player');
   const canPlaySelected = canPlayCards(state, 'player', selected);
   const canCallNow = canCall(state, 'player');
-  const yourHandValue = handValue(state.hands.player, state.jokerRank);
+  const yourHandValue = handValue(myHand, state.jokerRank);
   const discardTop = state.discardPile[state.discardPile.length - 1];
 
   function handleHandCardClick(cardId: string) {
     if (!yourTurnToAct) return;
     setSelected((current) => {
       if (current.includes(cardId)) return current.filter((id) => id !== cardId);
-      const card = state!.hands.player.find((c) => c.id === cardId);
-      const first = state!.hands.player.find((c) => c.id === current[0]);
+      const card = myHand.find((c) => c.id === cardId);
+      const first = myHand.find((c) => c.id === current[0]);
       if (first && card && first.rank !== card.rank) return [cardId];
       return [...current, cardId];
     });
@@ -259,26 +297,58 @@ export default function GameBoard({
             Your hand
             <span className="text-accent">{yourHandValue} pts</span>
           </span>
-          <div className="flex flex-wrap justify-center gap-2" key={state.roundNumber}>
-            <AnimatePresence mode="popLayout">
-              {sortHand(state.hands.player).map((card, i) => (
+          <div className="relative w-full">
+            <Reorder.Group
+              as="ul"
+              axis="x"
+              values={handOrder}
+              onReorder={setHandOrder}
+              className="flex list-none justify-center py-2"
+              key={state.roundNumber}
+            >
+              <AnimatePresence mode="popLayout">
+                {handOrder.map((id, i) => {
+                  const card = myHand.find((c) => c.id === id);
+                  if (!card) return null;
+                  return (
+                    <Reorder.Item
+                      key={id}
+                      value={id}
+                      as="li"
+                      initial={{ opacity: 0, y: 40, scale: 0.7 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -50, scale: 0.6, transition: { duration: 0.22 } }}
+                      whileDrag={{ scale: 1.08, zIndex: 1 }}
+                      transition={{ ...DEAL_SPRING, delay: i * 0.06 }}
+                      className={`flex-shrink-0 ${i === 0 ? '' : '-ml-2.5'}`}
+                    >
+                      <PlayingCard
+                        card={card}
+                        jokerRank={state.jokerRank}
+                        selected={selected.includes(card.id)}
+                        disabled={!yourTurnToAct}
+                        onClick={() => handleHandCardClick(card.id)}
+                      />
+                    </Reorder.Item>
+                  );
+                })}
+              </AnimatePresence>
+            </Reorder.Group>
+
+            <AnimatePresence>
+              {showHandHint && (
                 <motion.div
-                  key={card.id}
-                  layout
-                  initial={{ opacity: 0, y: 40, scale: 0.7 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -50, scale: 0.6, transition: { duration: 0.22 } }}
-                  transition={{ ...DEAL_SPRING, delay: i * 0.06 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.85, y: -6 }}
+                  transition={{ duration: 0.3 }}
+                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
                 >
-                  <PlayingCard
-                    card={card}
-                    jokerRank={state.jokerRank}
-                    selected={selected.includes(card.id)}
-                    disabled={!yourTurnToAct}
-                    onClick={() => handleHandCardClick(card.id)}
-                  />
+                  <span className="mono-label max-w-[240px] rounded-2xl bg-[#1c1a20]/90 px-4 py-2.5 text-center text-[11px] font-bold leading-relaxed text-white shadow-[0_4px_10px_rgba(0,0,0,0.25)]">
+                    🔀 Drag your cards to arrange them however you like
+                  </span>
                 </motion.div>
-              ))}
+              )}
             </AnimatePresence>
           </div>
           <span className="mono-label text-[11px] text-ink-soft">{playerName}</span>

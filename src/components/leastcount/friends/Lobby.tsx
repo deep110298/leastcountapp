@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { Room, RoomPlayerRow } from '@/lib/multiplayer/types';
+import { useIsNativePlatform } from '@/lib/useIsNativePlatform';
+import WebInstallBanner from './WebInstallBanner';
 
 const AVATAR_COLORS = ['bg-accent text-white', 'bg-wild text-white', 'bg-hairline text-ink'];
 
@@ -18,6 +20,7 @@ export default function Lobby({
   onStart: () => void;
 }) {
   const router = useRouter();
+  const isNative = useIsNativePlatform();
   const [copyState, setCopyState] = useState<'code' | 'link' | null>(null);
   const [starting, setStarting] = useState(false);
 
@@ -65,6 +68,7 @@ export default function Lobby({
       </button>
 
       <div className="flex w-full max-w-sm flex-1 flex-col gap-3.5 pt-4.5">
+        {!isNative && <WebInstallBanner />}
         <div className="flex flex-col items-center gap-2 rounded-[22px] border border-hairline bg-surface-sunken p-4">
           <span className="mono-label text-[11px] text-ink-soft">Room code</span>
           <span className="font-mono text-4xl font-bold leading-none tracking-[0.14em] text-accent">{room.code}</span>

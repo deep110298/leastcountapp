@@ -14,13 +14,16 @@ import {
 } from '@/lib/multiplayer/roomService';
 import { newMultiplayerGame, startNextRound } from '@/lib/multiplayer/engine';
 import type { MPGameState, Room, RoomPlayerRow } from '@/lib/multiplayer/types';
+import { useIsNativePlatform } from '@/lib/useIsNativePlatform';
 import Lobby from './Lobby';
 import MultiplayerGameBoard from './MultiplayerGameBoard';
+import WebInstallBanner from './WebInstallBanner';
 
 export default function RoomView({ code }: { code: string }) {
   const router = useRouter();
   const roomCode = code.toUpperCase();
   const myPlayerId = usePlayerId();
+  const isNative = useIsNativePlatform();
 
   const [room, setRoom] = useState<Room | null>(null);
   const [players, setPlayers] = useState<RoomPlayerRow[]>([]);
@@ -151,6 +154,11 @@ export default function RoomView({ code }: { code: string }) {
   if (!isMember) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-canvas px-4 text-center">
+        {!isNative && (
+          <div className="w-full max-w-xs">
+            <WebInstallBanner />
+          </div>
+        )}
         <div>
           <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">Join room {roomCode}</h1>
           <p className="mt-1 text-sm text-ink-muted">Enter your name to join.</p>

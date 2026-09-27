@@ -17,6 +17,7 @@ import type { MPGameState } from '@/lib/multiplayer/types';
 import { hideGlobalThemeToggle, showGlobalThemeToggle } from '@/lib/themeToggleVisibility';
 import InlineThemeToggle from '@/components/InlineThemeToggle';
 import CallAnnouncement from '@/components/leastcount/CallAnnouncement';
+import DragHandleHint from '@/components/leastcount/DragHandleHint';
 import PlayingCard, { CardBack } from '@/components/leastcount/PlayingCard';
 import RulesModal from '@/components/leastcount/RulesModal';
 import WildCardRevealModal from '@/components/leastcount/WildCardRevealModal';
@@ -336,59 +337,49 @@ export default function MultiplayerGameBoard({
                 Your hand
                 <span className="text-accent">{myHandValue} pts</span>
               </span>
-              <div className="relative w-full">
-                <Reorder.Group
-                  as="ul"
-                  axis="x"
-                  values={handOrder}
-                  onReorder={setHandOrder}
-                  className="flex list-none justify-center py-2"
-                  key={display.roundNumber}
+              <div className="flex w-full justify-center">
+                <div
+                  className={`flex flex-col items-center ${showHandHint ? 'overflow-hidden rounded-[18px] border border-hairline' : ''}`}
                 >
-                  <AnimatePresence mode="popLayout">
-                    {handOrder.map((id, i) => {
-                      const card = myHand.find((c) => c.id === id);
-                      if (!card) return null;
-                      return (
-                        <Reorder.Item
-                          key={id}
-                          value={id}
-                          as="li"
-                          initial={{ opacity: 0, y: 40, scale: 0.7 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -50, scale: 0.6, transition: { duration: 0.22 } }}
-                          whileDrag={{ scale: 1.08, zIndex: 1 }}
-                          transition={{ ...DEAL_SPRING, delay: i * 0.06 }}
-                          className={`flex-shrink-0 ${i === 0 ? '' : '-ml-2.5'}`}
-                        >
-                          <PlayingCard
-                            card={card}
-                            jokerRank={display.jokerRank}
-                            selected={selected.includes(card.id)}
-                            disabled={!yourTurnToAct}
-                            onClick={() => handleHandCardClick(card.id)}
-                          />
-                        </Reorder.Item>
-                      );
-                    })}
-                  </AnimatePresence>
-                </Reorder.Group>
+                  <Reorder.Group
+                    as="ul"
+                    axis="x"
+                    values={handOrder}
+                    onReorder={setHandOrder}
+                    className={`flex list-none justify-center ${showHandHint ? 'px-3.5 pb-2.5 pt-3.5' : 'py-2'}`}
+                    key={display.roundNumber}
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {handOrder.map((id, i) => {
+                        const card = myHand.find((c) => c.id === id);
+                        if (!card) return null;
+                        return (
+                          <Reorder.Item
+                            key={id}
+                            value={id}
+                            as="li"
+                            initial={{ opacity: 0, y: 40, scale: 0.7 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -50, scale: 0.6, transition: { duration: 0.22 } }}
+                            whileDrag={{ scale: 1.08, zIndex: 1 }}
+                            transition={{ ...DEAL_SPRING, delay: i * 0.06 }}
+                            className={`flex-shrink-0 ${i === 0 ? '' : '-ml-2.5'}`}
+                          >
+                            <PlayingCard
+                              card={card}
+                              jokerRank={display.jokerRank}
+                              selected={selected.includes(card.id)}
+                              disabled={!yourTurnToAct}
+                              onClick={() => handleHandCardClick(card.id)}
+                            />
+                          </Reorder.Item>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </Reorder.Group>
 
-                <AnimatePresence>
-                  {showHandHint && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.85, y: -6 }}
-                      transition={{ duration: 0.3 }}
-                      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
-                    >
-                      <span className="mono-label max-w-[240px] rounded-2xl bg-[#1c1a20]/90 px-4 py-2.5 text-center text-[11px] font-bold leading-relaxed text-white shadow-[0_4px_10px_rgba(0,0,0,0.25)]">
-                        🔀 Drag your cards to arrange them however you like
-                      </span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  <AnimatePresence>{showHandHint && <DragHandleHint />}</AnimatePresence>
+                </div>
               </div>
             </section>
 

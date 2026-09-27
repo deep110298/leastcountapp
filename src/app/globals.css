@@ -259,12 +259,39 @@ html[data-native-boot='1'] body > :not(#native-boot-veil) {
   animation: none;
 }
 
+@keyframes hint-sweep {
+  from {
+    background-position: -140% 0;
+  }
+  to {
+    background-position: 240% 0;
+  }
+}
+
+.hint-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.hint-sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 40%, color-mix(in srgb, var(--accent) 18%, transparent) 50%, transparent 60%);
+  background-size: 220% 100%;
+  animation: hint-sweep 3.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-card,
   .hero-card-inner,
   .fade-up,
   .pulse-dot,
   .call-pop {
+    animation: none;
+  }
+
+  .hint-sweep::after {
     animation: none;
   }
 }

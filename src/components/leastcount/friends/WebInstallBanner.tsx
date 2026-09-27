@@ -5,10 +5,8 @@ import AppleBadgeButton from '@/components/marketing/AppleBadgeButton';
 // is faster and also plays offline.
 export default function WebInstallBanner() {
   return (
-    <div className="flex w-full flex-col items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunken p-4 text-center">
-      <p className="text-sm font-semibold text-ink">
-        Playing in the browser works great — the app is faster and plays offline too.
-      </p>
+    <div className="flex w-full flex-col items-center gap-2">
+      <p className="text-sm font-semibold text-ink-muted">Now available in</p>
       <AppleBadgeButton variant="dark" />
     </div>
   );

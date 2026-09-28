@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, IBM_Plex_Mono } from "next/font/google";
-import { SerwistProvider } from "@serwist/next/react";
-import OfflineBanner from "@/components/OfflineBanner";
+import NativeBootVeilClear from "@/components/NativeBootVeilClear";
 import ThemeToggle from "@/components/ThemeToggle";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
@@ -66,28 +65,38 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             the HTML shipped over the wire is always the marketing markup
             (the server can't know it's native ahead of time). Without this,
             that marketing HTML paints for a frame before client JS hydrates,
-            detects the native shell, and swaps in GameLauncher. This mirrors
-            Capacitor's own isNativePlatform() bridge check (see page.tsx)
-            but runs synchronously before first paint, same trick as the
-            theme script above — flag it now so CSS can hide the wrong
-            content until the real component swap lands. */}
+            detects the native shell, and swaps in the real native screen.
+            This mirrors Capacitor's own isNativePlatform() bridge check
+            (see useIsNativePlatform) but runs synchronously before first
+            paint, same trick as the theme script above — flag it now so CSS
+            can hide the wrong content until the real component swap lands.
+            NativeBootVeilClear below removes the flag once that's done; it
+            has to run on every page, not just "/", since a plain <a href>
+            tap (see GameLauncher) is a full navigation that reruns this
+            script fresh on whatever page it lands on. */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{if((window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.bridge)||window.androidBridge){document.documentElement.setAttribute("data-native-boot","1")}}catch(e){}})()`,
           }}
         />
+        {/* This app no longer registers a service worker (src/sw.ts is now
+            just a kill switch — see its own comment for why), but a device
+            that installed the old caching one still has it active until the
+            browser's own update check notices the new file and swaps it in.
+            That check happens on its own, but isn't guaranteed to run on
+            every single load, so this forces it immediately on every page
+            view instead of leaving an already-broken device waiting on it. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.update()})})}}catch(e){}})()`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-canvas text-ink font-sans">
-        {/* reloadOnOnline is off on purpose: the default reloads the page the
-            moment connectivity returns, which would wipe an in-progress
-            vs-Computer or Story Mode hand (in-memory React state, not
-            persisted mid-round) the instant WiFi flickers back on. */}
-        <SerwistProvider swUrl="/sw.js" reloadOnOnline={false}>
-          <div id="native-boot-veil" />
-          <ThemeToggle />
-          {children}
-          <OfflineBanner />
-        </SerwistProvider>
+        <div id="native-boot-veil" />
+        <NativeBootVeilClear />
+        <ThemeToggle />
+        {children}
       </body>
     </html>
   );

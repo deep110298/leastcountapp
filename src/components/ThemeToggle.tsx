@@ -1,11 +1,11 @@
 'use client';
 
 import { useThemeState } from '@/lib/useThemeState';
-import { useGlobalThemeToggleHidden } from '@/lib/themeToggleVisibility';
+import { useGlobalGameChromeHidden } from '@/lib/gameChromeVisibility';
 
 export default function ThemeToggle() {
   const { theme, toggle } = useThemeState();
-  const hidden = useGlobalThemeToggleHidden();
+  const hidden = useGlobalGameChromeHidden();
 
   if (hidden) return null;
 

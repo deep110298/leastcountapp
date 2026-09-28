@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { dailyComputerName, todayKey } from '@/lib/leastCount/dailyChallenge';
 import { getEffectiveStreak, getLast7Days, getLastResult, hasPlayedToday, type DailyOutcome } from '@/lib/leastCount/dailyStreak';
 
@@ -40,7 +39,8 @@ export default function DailyChallengeCard() {
   if (!status) return null;
 
   return (
-    <Link
+    // Plain <a>, not next/link — see GameLauncher.tsx's Play now button.
+    <a
       href="/play/daily"
       className="block rounded-[18px] border-[1.5px] border-ember p-3.5 text-left transition-transform active:scale-[0.98]"
       style={{ background: 'linear-gradient(155deg, var(--ember-soft), var(--surface) 65%)' }}
@@ -85,6 +85,6 @@ export default function DailyChallengeCard() {
           </span>
         ))}
       </div>
-    </Link>
+    </a>
   );
 }

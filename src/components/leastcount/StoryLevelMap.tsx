@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { getWorldLevels, worldName, LEVELS_PER_WORLD, type StoryLevelConfig } from '@/lib/leastCount/storyLevels';
 import { getStars, isLevelUnlocked, type Stars } from '@/lib/leastCount/storyProgress';
 
@@ -42,9 +41,11 @@ export default function StoryLevelMap({ world }: { world: number }) {
   return (
     <div className="relative min-h-dvh bg-canvas">
       <div className="sticky top-0 z-20 flex items-center justify-between gap-2 bg-canvas pb-3 pl-4 pr-12 pt-[max(0.75rem,env(safe-area-inset-top))]">
-        <Link href="/play/story" className="mono-label text-xs font-bold text-ink-soft hover:text-ink">
+        {/* Plain <a>, not next/link — see GameLauncher.tsx's Play now button. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href="/play/story" className="mono-label text-xs font-bold text-ink-soft hover:text-ink">
           ← Worlds
-        </Link>
+        </a>
         <span className="mono-label rounded-full bg-wild/10 px-2.5 py-1 text-xs font-bold text-wild">
           {clearedCount}/{LEVELS_PER_WORLD} cleared
         </span>
@@ -113,9 +114,5 @@ function LevelBox({
     </div>
   );
 
-  return status.unlocked ? (
-    <Link href={`/play/story/${status.config.globalId}`}>{box}</Link>
-  ) : (
-    box
-  );
+  return status.unlocked ? <a href={`/play/story/${status.config.globalId}`}>{box}</a> : box;
 }

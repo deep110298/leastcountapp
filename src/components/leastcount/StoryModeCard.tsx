@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { TOTAL_LEVELS, worldName, worldOf, levelInWorldOf } from '@/lib/leastCount/storyLevels';
 import { getFurthestUnlocked, getTotalStars } from '@/lib/leastCount/storyProgress';
 
@@ -32,7 +31,9 @@ export default function StoryModeCard() {
   const levelInWorld = levelInWorldOf(Math.min(status.furthestUnlocked, TOTAL_LEVELS));
 
   return (
-    <Link
+    // Plain <a>, not next/link — see GameLauncher.tsx's Play now button.
+    // eslint-disable-next-line @next/next/no-html-link-for-pages
+    <a
       href="/play/story"
       className="block rounded-[18px] border-[1.5px] border-wild p-3.5 text-left transition-transform active:scale-[0.98]"
       style={{ background: 'linear-gradient(155deg, var(--wild-soft), var(--surface) 65%)' }}
@@ -52,6 +53,6 @@ export default function StoryModeCard() {
       <div className="mt-0.5 text-xs text-ink-muted">
         {cleared ? `${status.totalStars}/${TOTAL_LEVELS * 3} stars` : started ? worldName(world) : '25 worlds · 500 levels'}
       </div>
-    </Link>
+    </a>
   );
 }

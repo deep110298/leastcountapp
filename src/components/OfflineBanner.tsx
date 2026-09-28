@@ -1,11 +1,16 @@
 'use client';
 
 import { useOffline } from 'next/offline';
+import { useGlobalGameChromeHidden } from '@/lib/gameChromeVisibility';
 
 export default function OfflineBanner() {
   const isOffline = useOffline();
+  // A game board's own bottom action bar (Play card / Least Count) sits in
+  // the same fixed corner this banner does — see hideGlobalGameChrome in
+  // GameBoard.tsx / MultiplayerGameBoard.tsx.
+  const hidden = useGlobalGameChromeHidden();
 
-  if (!isOffline) return null;
+  if (!isOffline || hidden) return null;
 
   return (
     <div

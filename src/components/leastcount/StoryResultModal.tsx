@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { hardNavigate } from '@/lib/hardNavigate';
 import { getLevelConfig, TOTAL_LEVELS, worldName } from '@/lib/leastCount/storyLevels';
 import { computeStars, recordLevelResult } from '@/lib/leastCount/storyProgress';
 import Confetti from './Confetti';
@@ -22,7 +22,6 @@ export default function StoryResultModal({
   rival: string;
   onPlayAgain: () => void;
 }) {
-  const router = useRouter();
   const config = getLevelConfig(globalId);
   const stars = won ? computeStars(playerScore, target) : 0;
   // Idempotent per level: replaying an already-cleared level for a better
@@ -71,7 +70,7 @@ export default function StoryResultModal({
           {won && !isLastLevel && (
             <button
               type="button"
-              onClick={() => router.push(`/play/story/${globalId + 1}`)}
+              onClick={() => hardNavigate(`/play/story/${globalId + 1}`)}
               className="w-full rounded-2xl bg-wild px-4 py-[18px] text-center font-bold text-lg text-white shadow-[0_5px_0_var(--wild-shadow)] transition-transform active:translate-y-[3px] active:shadow-[0_2px_0_var(--wild-shadow)]"
             >
               Next level
@@ -90,7 +89,7 @@ export default function StoryResultModal({
           </button>
           <button
             type="button"
-            onClick={() => router.push(`/play/story/world/${config.world}`)}
+            onClick={() => hardNavigate(`/play/story/world/${config.world}`)}
             className="w-full rounded-2xl border-2 border-hairline-strong px-4 py-4 text-center font-semibold text-lg text-ink transition-colors hover:bg-surface-sunken"
           >
             Back to map

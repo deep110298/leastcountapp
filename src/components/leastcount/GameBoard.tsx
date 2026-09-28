@@ -18,7 +18,7 @@ import {
 } from '@/lib/leastCount/engine';
 import { worldName } from '@/lib/leastCount/storyLevels';
 import type { GameState } from '@/lib/leastCount/types';
-import { hideGlobalThemeToggle, showGlobalThemeToggle } from '@/lib/themeToggleVisibility';
+import { hideGlobalGameChrome, showGlobalGameChrome } from '@/lib/gameChromeVisibility';
 import InlineThemeToggle from '@/components/InlineThemeToggle';
 import CallAnnouncement from './CallAnnouncement';
 import DailyResultModal from './DailyResultModal';
@@ -77,12 +77,14 @@ export default function GameBoard({
   const computerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gameStarted = state !== null;
 
-  // The board's own header has an inline toggle right under Rules — the
-  // fixed corner one would otherwise sit on top of the scoreboard.
+  // The board's own header has an inline theme toggle right under Rules —
+  // the fixed corner one would otherwise sit on top of the scoreboard. The
+  // same flag also hides the fixed-bottom offline banner, which would
+  // otherwise overlap the Play card / Least Count buttons.
   useEffect(() => {
     if (!gameStarted) return;
-    hideGlobalThemeToggle();
-    return () => showGlobalThemeToggle();
+    hideGlobalGameChrome();
+    return () => showGlobalGameChrome();
   }, [gameStarted]);
 
   useEffect(() => {

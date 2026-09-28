@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { hardNavigate } from '@/lib/hardNavigate';
 import type { GameState, PlayerId } from '@/lib/leastCount/types';
 import Confetti from './Confetti';
 import Modal from './Modal';
@@ -16,7 +16,6 @@ export default function GameOverModal({
   computerName: string;
   onPlayAgain: () => void;
 }) {
-  const router = useRouter();
   const won = state.winner === 'player';
   const names: Record<PlayerId, string> = { player: playerName, computer: computerName };
   const ranked: PlayerId[] = (['player', 'computer'] as PlayerId[]).sort((a, b) => state.scores[a] - state.scores[b]);
@@ -66,7 +65,7 @@ export default function GameOverModal({
           </button>
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => hardNavigate('/')}
             className="w-full rounded-2xl border-2 border-hairline-strong px-4 py-4 text-center font-semibold text-lg text-ink transition-colors hover:bg-surface-sunken"
           >
             Return to menu

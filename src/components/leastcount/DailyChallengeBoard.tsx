@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { dailyComputerName, dayNumber, newDailyGame, todayKey } from '@/lib/leastCount/dailyChallenge';
-import { getLastResult, hasPlayedToday } from '@/lib/leastCount/dailyStreak';
+import { dailyComputerName, newDailyGame, todayKey } from '@/lib/leastCount/dailyChallenge';
+import { getDayNumber, getLastResult, hasPlayedToday } from '@/lib/leastCount/dailyStreak';
 import { getSavedPlayerName } from '@/lib/playerName';
 import DailyResultModal from './DailyResultModal';
 import GameBoard from './GameBoard';
@@ -26,7 +26,7 @@ function buildTodayInfo(): TodayInfo {
   const dateKey = todayKey();
   return {
     dateKey,
-    day: dayNumber(dateKey),
+    day: getDayNumber(dateKey),
     alreadyPlayed: hasPlayedToday(dateKey),
     lastResult: getLastResult(dateKey),
     playerName: getSavedPlayerName() || 'You',

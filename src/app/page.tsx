@@ -1,6 +1,5 @@
 'use client';
 
-import { useLayoutEffect } from 'react';
 import GameLauncher from '@/components/leastcount/GameLauncher';
 import MarketingHome from '@/components/marketing/MarketingHome';
 import { useIsNativePlatform } from '@/lib/useIsNativePlatform';
@@ -9,18 +8,12 @@ import { useIsNativePlatform } from '@/lib/useIsNativePlatform';
 // entire UI — see capacitor.config.ts's server.url. So this route has to
 // serve two different things from the same path: the game launcher inside
 // the native app shell, and a marketing page for everyone else on the web.
+//
+// The boot veil (see layout.tsx) used to get cleared from here, but that
+// only ever ran on this one page — see NativeBootVeilClear, now mounted in
+// the root layout instead, for why every other page needs it too.
 export default function Home() {
   const isNative = useIsNativePlatform();
-
-  // Drops the pre-paint veil (see layout.tsx) the instant GameLauncher is
-  // the one actually committed to the DOM — a layout effect runs
-  // synchronously before the browser's next paint, so this never shows a
-  // frame of the marketing page it was hiding.
-  useLayoutEffect(() => {
-    if (isNative) {
-      document.documentElement.removeAttribute('data-native-boot');
-    }
-  }, [isNative]);
 
   return isNative ? <GameLauncher /> : <MarketingHome />;
 }

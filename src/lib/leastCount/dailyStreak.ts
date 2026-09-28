@@ -1,4 +1,4 @@
-import { addDaysToKey, dayNumber, todayKey } from './dailyChallenge';
+import { addDaysToKey, todayKey } from './dailyChallenge';
 
 const STORAGE_KEY = 'leastcount_daily_streak_v1';
 const HISTORY_KEEP_DAYS = 30;
@@ -16,6 +16,7 @@ export interface DailyResultSummary {
 interface DailyStreakData {
   lastPlayedDate: string | null;
   currentStreak: number;
+  dayStreak: number;
   bestStreak: number;
   history: Record<string, DailyOutcome>;
   lastResult: DailyResultSummary | null;
@@ -24,6 +25,7 @@ interface DailyStreakData {
 const DEFAULT_DATA: DailyStreakData = {
   lastPlayedDate: null,
   currentStreak: 0,
+  dayStreak: 0,
   bestStreak: 0,
   history: {},
   lastResult: null,
@@ -82,6 +84,25 @@ export function getBestStreak(): number {
   return load().bestStreak;
 }
 
+// "Day N" shown on the challenge itself — how many calendar days in a row,
+// ending today, the player has played (win or lose both count, unlike the
+// win-only streak above). Computed before today's result exists: if
+// yesterday was played, today continues that run; a gap, or never having
+// played before, starts back over at 1. Once today is recorded, this
+// returns the value that was stored for it, so the badge doesn't change
+// mid-match or flip between the live game and its result screen.
+export function getDayNumber(dateKey: string = todayKey()): number {
+  const data = load();
+  if (data.lastPlayedDate === dateKey) {
+    return data.lastResult?.dayNumber ?? 1;
+  }
+  const yesterday = addDaysToKey(dateKey, -1);
+  if (data.lastPlayedDate === yesterday) {
+    return data.dayStreak + 1;
+  }
+  return 1;
+}
+
 export function getLast7Days(
   dateKey: string = todayKey()
 ): { dateKey: string; result: DailyOutcome | null; isToday: boolean }[] {
@@ -119,15 +140,17 @@ export function recordDailyResult(input: {
   const continuesStreak = data.lastPlayedDate === yesterday;
   const nextStreak = input.result === 'win' ? (continuesStreak ? data.currentStreak + 1 : 1) : 0;
   const nextBest = Math.max(data.bestStreak, nextStreak);
+  const nextDayStreak = continuesStreak ? data.dayStreak + 1 : 1;
 
   save({
     lastPlayedDate: input.dateKey,
     currentStreak: nextStreak,
+    dayStreak: nextDayStreak,
     bestStreak: nextBest,
     history: trimHistory({ ...data.history, [input.dateKey]: input.result }, input.dateKey),
     lastResult: {
       dateKey: input.dateKey,
-      dayNumber: dayNumber(input.dateKey),
+      dayNumber: nextDayStreak,
       rival: input.rival,
       rounds: input.rounds,
       result: input.result,

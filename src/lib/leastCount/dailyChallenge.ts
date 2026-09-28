@@ -6,10 +6,6 @@ import type { GameState } from './types';
 export const DAILY_TARGET = 100;
 export const DAILY_DIFFICULTY: Difficulty = 'medium';
 
-// The first calendar day the daily challenge existed — "Day 1". Everything
-// before it has no challenge to look back on.
-const LAUNCH_DATE = '2026-09-09';
-
 // A small, fast, deterministic PRNG (mulberry32) — good enough for shuffling
 // a deck identically for every player on a given day, not for anything
 // security-sensitive.
@@ -46,15 +42,6 @@ export function addDaysToKey(dateKey: string, delta: number): string {
   const date = new Date(year, month - 1, day);
   date.setDate(date.getDate() + delta);
   return todayKey(date);
-}
-
-// "Day N" shown in the UI — days since launch, 1-indexed.
-export function dayNumber(dateKey: string): number {
-  const [y1, m1, d1] = LAUNCH_DATE.split('-').map(Number);
-  const [y2, m2, d2] = dateKey.split('-').map(Number);
-  const launch = Date.UTC(y1, m1 - 1, d1);
-  const target = Date.UTC(y2, m2 - 1, d2);
-  return Math.round((target - launch) / 86_400_000) + 1;
 }
 
 // The round-1 deal (hands, wild card, draw/discard order) is identical for

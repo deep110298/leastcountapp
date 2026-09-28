@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { randomComputerName } from '@/lib/leastCount/computerNames';
 import { newGame } from '@/lib/leastCount/engine';
 import { getLevelConfig, type StoryLevelConfig } from '@/lib/leastCount/storyLevels';
@@ -53,12 +52,14 @@ export default function StoryLevelBoard({ globalId }: { globalId: number }) {
           🔒
         </span>
         <p className="text-ink-muted">This level isn&apos;t unlocked yet.</p>
-        <Link
+        {/* Plain <a>, not next/link — see GameLauncher.tsx's Play now button. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a
           href="/play/story"
           className="rounded-2xl bg-wild px-5 py-3 text-center font-bold text-white shadow-[0_4px_0_var(--wild-shadow)] transition-transform active:translate-y-[2px] active:shadow-[0_2px_0_var(--wild-shadow)]"
         >
           Back to Story Mode
-        </Link>
+        </a>
       </div>
     );
   }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import { getWorldLevels, worldName, WORLD_COUNT, TOTAL_LEVELS, LEVELS_PER_WORLD } from '@/lib/leastCount/storyLevels';
 import { getStars, getTotalStars, isWorldCleared, isWorldUnlocked } from '@/lib/leastCount/storyProgress';
 import { SNAKE_DESIGN_WIDTH, getSnakeHeight, getSnakePoints, buildSmoothPath, type SnakePoint } from '@/lib/leastCount/snakeLayout';
@@ -54,9 +53,11 @@ export default function StoryWorldMap() {
     <div className="relative min-h-dvh bg-canvas">
       <div className="mx-auto w-full max-w-md px-4 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between pr-12">
-          <Link href="/" className="mono-label text-xs font-bold text-ink-soft hover:text-ink">
+          {/* Plain <a>, not next/link — see GameLauncher.tsx's Play now button. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/" className="mono-label text-xs font-bold text-ink-soft hover:text-ink">
             ← Home
-          </Link>
+          </a>
           {status && (
             <span className="mono-label rounded-full bg-wild/10 px-2.5 py-1 text-xs font-bold text-wild">
               ⭐ {status.totalStars}/{TOTAL_LEVELS * 3}
@@ -127,9 +128,9 @@ function WorldNode({
       style={{ left: `${(point.x / SNAKE_DESIGN_WIDTH) * 100}%`, top: `${(point.y / height) * 100}%` }}
     >
       {status.unlocked ? (
-        <Link href={`/play/story/world/${status.world}`} className="transition-transform active:scale-90">
+        <a href={`/play/story/world/${status.world}`} className="transition-transform active:scale-90">
           {chip}
-        </Link>
+        </a>
       ) : (
         chip
       )}

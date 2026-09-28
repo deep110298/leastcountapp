@@ -2,7 +2,6 @@
 
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
-import Link from 'next/link';
 import DailyChallengeCard from '@/components/leastcount/DailyChallengeCard';
 import PlayingCard from '@/components/leastcount/PlayingCard';
 import RulesModal from '@/components/leastcount/RulesModal';
@@ -61,18 +60,22 @@ export default function GameLauncher() {
       <div className="fade-up flex w-full max-w-xs flex-col gap-3" style={{ animationDelay: '460ms' }}>
         <DailyChallengeCard />
         <StoryModeCard />
-        <Link
+        {/* Plain <a>, not next/link — a service-worker-precached route (see
+            src/sw.ts) loads reliably offline via a full navigation; a
+            client-side <Link> transition needs the route already prefetched
+            this session, per Next's offline-support guide. */}
+        <a
           href="/play/computer"
           className="rounded-[18px] bg-accent px-4 py-[18px] text-center font-bold text-lg text-white shadow-[0_5px_0_var(--accent-shadow)] transition-transform active:translate-y-[3px] active:shadow-[0_2px_0_var(--accent-shadow)]"
         >
           Play now
-        </Link>
-        <Link
+        </a>
+        <a
           href="/play/friends"
           className="rounded-[18px] border-2 border-hairline-strong px-4 py-4 text-center font-semibold text-lg text-ink transition-colors hover:bg-surface-sunken"
         >
           Play with Friends
-        </Link>
+        </a>
         <button
           type="button"
           onClick={() => setShowRules(true)}

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { HAND_SIZE, INCORRECT_CALL_PENALTY } from '@/lib/leastCount/engine';
 import type { Difficulty } from '@/lib/leastCount/ai';
@@ -33,9 +32,11 @@ export default function SetupScreen({
   return (
     <div className="flex min-h-dvh flex-col items-center bg-canvas px-6 pb-5 pt-[max(0.75rem,env(safe-area-inset-top))] text-ink">
       <div className="flex w-full max-w-sm items-center justify-between pr-10">
-        <Link href="/" className="mono-label text-xs text-ink-soft hover:text-ink">
+        {/* Plain <a>, not next/link — see GameLauncher.tsx's Play now button. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href="/" className="mono-label text-xs text-ink-soft hover:text-ink">
           ← Home
-        </Link>
+        </a>
         <button
           type="button"
           onClick={() => setShowRules(true)}

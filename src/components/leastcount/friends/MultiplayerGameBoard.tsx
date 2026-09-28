@@ -14,7 +14,7 @@ import {
 } from '@/lib/multiplayer/engine';
 import { QUICK_CHAT_MESSAGES, subscribeToQuickChat, type QuickChatEvent } from '@/lib/multiplayer/quickChat';
 import type { MPGameState } from '@/lib/multiplayer/types';
-import { hideGlobalThemeToggle, showGlobalThemeToggle } from '@/lib/themeToggleVisibility';
+import { hideGlobalGameChrome, showGlobalGameChrome } from '@/lib/gameChromeVisibility';
 import InlineThemeToggle from '@/components/InlineThemeToggle';
 import CallAnnouncement from '@/components/leastcount/CallAnnouncement';
 import DragHandleHint from '@/components/leastcount/DragHandleHint';
@@ -59,12 +59,14 @@ export default function MultiplayerGameBoard({
   const [bubbles, setBubbles] = useState<(QuickChatEvent & { id: number })[]>([]);
   const chatRef = useRef<ReturnType<typeof subscribeToQuickChat> | null>(null);
 
-  // The board's own header has an inline toggle right under Rules — the
-  // fixed corner one would otherwise sit on top of the scoreboard, whose
-  // height varies with player count.
+  // The board's own header has an inline theme toggle right under Rules —
+  // the fixed corner one would otherwise sit on top of the scoreboard, whose
+  // height varies with player count. The same flag also hides the
+  // fixed-bottom offline banner, which would otherwise overlap the Play
+  // card / Least Count buttons.
   useEffect(() => {
-    hideGlobalThemeToggle();
-    return () => showGlobalThemeToggle();
+    hideGlobalGameChrome();
+    return () => showGlobalGameChrome();
   }, []);
 
   function pushBubble(event: QuickChatEvent) {

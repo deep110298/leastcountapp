@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { hardNavigate } from '@/lib/hardNavigate';
 import Modal from './Modal';
 
 export default function PauseModal({
@@ -12,8 +12,6 @@ export default function PauseModal({
   onRestart?: () => void;
   backToLevelsHref?: string;
 }) {
-  const router = useRouter();
-
   return (
     <Modal>
       <div className="text-center">
@@ -41,7 +39,7 @@ export default function PauseModal({
         {backToLevelsHref && (
           <button
             type="button"
-            onClick={() => router.push(backToLevelsHref)}
+            onClick={() => hardNavigate(backToLevelsHref)}
             className="w-full rounded-2xl border-2 border-hairline-strong px-4 py-4 text-center font-semibold text-lg text-ink transition-colors hover:bg-surface-sunken"
           >
             Back to level select
@@ -49,7 +47,7 @@ export default function PauseModal({
         )}
         <button
           type="button"
-          onClick={() => router.push('/')}
+          onClick={() => hardNavigate('/')}
           className="w-full rounded-2xl border-2 border-hairline-strong px-4 py-4 text-center font-semibold text-lg text-ink transition-colors hover:bg-surface-sunken"
         >
           Exit to home

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { hardNavigate } from '@/lib/hardNavigate';
 import { recordDailyResult, type DailyOutcome } from '@/lib/leastCount/dailyStreak';
 import Confetti from './Confetti';
 import Modal from './Modal';
@@ -27,7 +27,6 @@ export default function DailyResultModal({
   rounds: number;
   result: DailyOutcome;
 }) {
-  const router = useRouter();
   const [copied, setCopied] = useState(false);
   // Idempotent per date: on a fresh finish this records the result; on a
   // revisit later the same day it just returns what was already recorded.
@@ -151,7 +150,7 @@ export default function DailyResultModal({
         <div className="mt-5 flex flex-col gap-3">
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => hardNavigate('/')}
             className="w-full rounded-2xl border-2 border-hairline-strong px-4 py-4 text-center font-semibold text-lg text-ink transition-colors hover:bg-surface-sunken"
           >
             Back to menu
